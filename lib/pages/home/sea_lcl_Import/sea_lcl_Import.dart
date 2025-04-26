@@ -1,15 +1,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:logistic/models/document_model.dart';
+import 'package:logistic/models/ktlogistics_token.dart';
 import 'package:logistic/widgets/base_scaffold.dart';
 
 class SeaLCLImportPage extends BaseListPage<FwDocumentationViewModel> {
   final FwDocumentationViewModel data;
+  final KtLogisticsToken token;
 
   const SeaLCLImportPage({
     super.key,
     required this.data,
-  }) : super(title: 'Sea LCL Import');
+    required this.token
+  }) : super(title: 'Sea LCL Import',token: token);
   @override
   Future<List<FwDocumentationViewModel>> fetchItems() async {
     return data.items.map((e) => FwDocumentationViewModel.fromJson(e)).toList();

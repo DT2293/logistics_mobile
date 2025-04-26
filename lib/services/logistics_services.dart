@@ -18,7 +18,7 @@ Future<bool> checkPermission(String authenticateToken, String funcsTagActive) as
 
     // Kiểm tra nếu không có dữ liệu
     if (storedToken == null || storedFuncsTagActive == null) {
-      print('❌ Không có thông tin token hoặc funcsTagActive');
+      print('Không có thông tin token hoặc funcsTagActive');
       return false;
     }
 
@@ -28,10 +28,10 @@ Future<bool> checkPermission(String authenticateToken, String funcsTagActive) as
       return true;
     }
 
-    print('❌ Không có quyền Forward hoặc funcsTagActive không hợp lệ');
+    print('Không có quyền Forward hoặc funcsTagActive không hợp lệ');
     return false;
   } catch (e) {
-    print('❌ Lỗi khi kiểm tra quyền: $e');
+    print('Lỗi khi kiểm tra quyền: $e');
     return false;
   }
 }
@@ -59,7 +59,7 @@ Future<bool> checkPermission(String authenticateToken, String funcsTagActive) as
       );
 
       if (response.statusCode == 200) {
-        print('✅ Dữ liệu từ $path: ${response.body}');
+      //  print('✅ Dữ liệu từ $path: ${response.body}');
         return jsonDecode(response.body) as Map<String, dynamic>;
       } else if (response.statusCode == 401) {
         print('❌ Lỗi 401: Token không hợp lệ hoặc hết hạn');

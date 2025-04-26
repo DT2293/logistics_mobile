@@ -1,15 +1,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:logistic/models/document_model.dart';
+import 'package:logistic/models/ktlogistics_token.dart';
 import 'package:logistic/widgets/base_scaffold.dart';
 
 class AirExportPage extends BaseListPage<FwDocumentationViewModel> {
   final FwDocumentationViewModel data;
-
+final KtLogisticsToken token;
   const AirExportPage({
     super.key,
     required this.data,
-  }) : super(title: 'Air Export');
+    required this.token
+  }) : super(title: 'Air Export', token: token);
 
   @override
   Future<List<FwDocumentationViewModel>> fetchItems() async {

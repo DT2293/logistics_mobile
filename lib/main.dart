@@ -21,11 +21,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginPage(), // Không cần truyền token
+      home: const SplashPage(), // Không cần truyền token
       debugShowCheckedModeBanner: false,
     );
   }
 }
-
 
 

@@ -31,6 +31,19 @@ class KtLogisticsToken {
       service: json['service'] ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'messCode': messCode,
+      'message': message,
+      'authenticateToken': authenticateToken,
+      'expiredAuthenticateToken': expiredAuthenticateToken,
+      'refreshToken': refreshToken,
+      'expiredRefreshToken': expiredRefreshToken,
+      'userLogisticsInfosModels': userLogisticsInfosModels.toJson(),
+      'service': service,
+    };
+  }
 }
 
 class UserLogisticsInfosModels {
@@ -60,6 +73,16 @@ class UserLogisticsInfosModels {
           .toList(),
       companyInfo: CompanyInfo.fromJson(json['companyInfo']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'oneUserLogisticsInfo': oneUserLogisticsInfo.toJson(),
+      'oneDepartmentInfo': oneDepartmentInfo.toJson(),
+      'listDepartmentFunctions': listDepartmentFunctions.map((e) => e.toJson()).toList(),
+      'lstFunctions': lstFunctions.map((e) => e.toJson()).toList(),
+      'companyInfo': companyInfo.toJson(),
+    };
   }
 }
 
@@ -111,6 +134,24 @@ class UserLogisticsInfo {
       isActive: json['isActive'] ?? false,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userId': userId,
+      'userName': userName,
+      'pass': pass,
+      'fullName': fullName,
+      'email': email,
+      'phone': phone,
+      'address': address,
+      'avatar': avatar,
+      'createDate': createDate,
+      'editDate': editDate,
+      'departmentId': departmentId,
+      'positionId': positionId,
+      'isActive': isActive,
+    };
+  }
 }
 
 class OneDepartmentInfo {
@@ -131,6 +172,14 @@ class OneDepartmentInfo {
       description: json['description'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userGrpId': userGrpId,
+      'note': note,
+      'description': description,
+    };
+  }
 }
 
 class DepartmentFunction {
@@ -147,6 +196,13 @@ class DepartmentFunction {
       component: json['component'],
       funcsTagActive: json['funcsTagActive'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'component': component,
+      'funcsTagActive': funcsTagActive,
+    };
   }
 }
 
@@ -211,6 +267,27 @@ class FunctionModel {
           .toList(),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'functionId': functionId,
+      'parentFunctionId': parentFunctionId,
+      'functionName': functionName,
+      'controllerName': controllerName,
+      'actionName': actionName,
+      'iconUrl': iconUrl,
+      'description': description,
+      'isShow': isShow,
+      'isActive': isActive,
+      'isNavMenuButtom': isNavMenuButtom,
+      'displayOrder': displayOrder,
+      'menuButtomOrder': menuButtomOrder,
+      'isPopup': isPopup,
+      'toolBarType': toolBarType,
+      'decentralization': decentralization?.toJson(),
+      'inverseParent': inverseParent.map((e) => e.toJson()).toList(),
+    };
+  }
 }
 
 class Decentralization {
@@ -239,6 +316,17 @@ class Decentralization {
       isCreate: json['isCreate'] ?? false,
       isActive: json['isActive'] ?? false,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'functionId': functionId,
+      'isRead': isRead,
+      'isDelete': isDelete,
+      'isUpdate': isUpdate,
+      'isCreate': isCreate,
+      'isActive': isActive,
+    };
   }
 }
 
@@ -298,5 +386,26 @@ class CompanyInfo {
       email: json['email'],
       logo: json['logo'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'companyID': companyID,
+      'companyNameVN': companyNameVN,
+      'companyNameEN': companyNameEN,
+      'companyAddress': companyAddress,
+      'address2': address2,
+      'province': province,
+      'ward': ward,
+      'zipCode': zipCode,
+      'country': country,
+      'telPhone': telPhone,
+      'taxNo': taxNo,
+      'taxCode': taxCode,
+      'accountInfo': accountInfo,
+      'website': website,
+      'email': email,
+      'logo': logo,
+    };
   }
 }

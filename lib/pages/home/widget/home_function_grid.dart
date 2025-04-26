@@ -14,11 +14,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HomeFunctionGrid extends StatefulWidget {
   final List<FunctionModel> functions;
   final Map<String, int> recordCounts;
+ final KtLogisticsToken token; // Thêm dòng này
 
   const HomeFunctionGrid({
     super.key,
     required this.functions,
     required this.recordCounts,
+    required this.token
   });
 
   @override
@@ -27,7 +29,6 @@ class HomeFunctionGrid extends StatefulWidget {
 
 class _HomeFunctionGridState extends State<HomeFunctionGrid> {
   final LogisticsServices service = LogisticsServices();
-
   IconData _getIcon(String? name) {
     if (name == null) return Icons.device_unknown;
     final lower = name.toLowerCase();
@@ -106,7 +107,7 @@ Future<void> _navigateToSeaFCLExport() async {
   await navigateToDocumentationPage(
     context: context,
     fetchFunction: service.seaFclExport,
-    pageBuilder: (data) => SeaFCLExportPage(data: data),
+    pageBuilder: (data) => SeaFCLExportPage(data: data, token: widget.token,),
   );
 }
 
@@ -114,7 +115,7 @@ Future<void> _navigateToSeaLCLExport() async {
   await navigateToDocumentationPage(
     context: context,
     fetchFunction: service.sealclExport,
-    pageBuilder: (data) => SeaLCLExportPage(data: data),
+    pageBuilder: (data) => SeaLCLExportPage(data: data,token: widget.token),
   );
 }
 
@@ -122,7 +123,7 @@ Future<void> _navigateToSeaLCLImport() async {
   await navigateToDocumentationPage(
     context: context,
     fetchFunction: service.sealclImport,
-    pageBuilder: (data) => SeaLCLImportPage(data: data),
+    pageBuilder: (data) => SeaLCLImportPage(data: data,token: widget.token),
   );
 }
 
@@ -130,7 +131,7 @@ Future<void> _navigateToSeaFCLImport() async {
   await navigateToDocumentationPage(
     context: context,
     fetchFunction: service.seafclImport,
-    pageBuilder: (data) => SeaFCLImportPage(data: data),
+    pageBuilder: (data) => SeaFCLImportPage(data: data,token: widget.token),
   );
 }
 
@@ -138,7 +139,7 @@ Future<void> _navigateToAirExport() async {
   await navigateToDocumentationPage(
     context: context,
     fetchFunction: service.airExport,
-    pageBuilder: (data) => AirExportPage(data: data),
+    pageBuilder: (data) => AirExportPage(data: data,token: widget.token),
   );
 }
 
@@ -146,7 +147,7 @@ Future<void> _navigateToAirImport() async {
   await navigateToDocumentationPage(
     context: context,
     fetchFunction: service.airImport,
-    pageBuilder: (data) => AirImportPage(data: data),
+    pageBuilder: (data) => AirImportPage(data: data,token: widget.token),
   );
 }
 

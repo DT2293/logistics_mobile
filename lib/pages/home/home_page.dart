@@ -105,15 +105,30 @@ final funcsTagActiveProvider = FutureProvider<String?>((ref) async {
 final recordCountsProvider = StateNotifierProvider.family<RecordCountsNotifier, Map<String, int>, KtLogisticsToken>(
   (ref, token) => RecordCountsNotifier(LogisticsServices(), token),
 );
-
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerStatefulWidget {
   final KtLogisticsToken token;
 
   const HomePage({super.key, required this.token});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Lắng nghe authenticateToken và funcsTagActive từ Provider
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    _autoLogin();
+  }
+
+  // Ensure auto-login is handled after the widget is initialized
+  void _autoLogin() async {
+    await AuthService.tryAutoLogin();  // Ensure this is a valid method from your AuthService
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Watching the authenticateTokenProvider and funcsTagActiveProvider
     final authenticateTokenAsync = ref.watch(authenticateTokenProvider);
     final funcsTagActiveAsync = ref.watch(funcsTagActiveProvider);
 
@@ -121,37 +136,38 @@ class HomePage extends ConsumerWidget {
       data: (authenticateToken) {
         return funcsTagActiveAsync.when(
           data: (funcsTagActive) {
+            // Handle null data if needed, otherwise continue
             if (authenticateToken == null || funcsTagActive == null) {
-              return Center(child: Text("Lỗi: Token không hợp lệ"));
+              return const Center(child: Text("Lỗi: Token không hợp lệ"));
             }
 
-            // Xử lý khi có authenticateToken và funcsTagActive hợp lệ
-            final recordCounts = ref.watch(recordCountsProvider(token));
-
-            final functions = token.userLogisticsInfosModels.lstFunctions
+            // Using the `widget.token` to access the `KtLogisticsToken` and extract needed info
+            final recordCounts = ref.watch(recordCountsProvider(widget.token));
+            final functions = widget.token.userLogisticsInfosModels.lstFunctions
                 .firstWhere((f) => f.functionName == 'Forward')
                 .inverseParent
                 .take(6)
                 .toList();
-            final user = token.userLogisticsInfosModels.oneUserLogisticsInfo;
+            final user = widget.token.userLogisticsInfosModels.oneUserLogisticsInfo;
 
+            // Return the home page UI
             return Scaffold(
               backgroundColor: Colors.grey[100],
               body: Column(
                 children: [
                   HomeHeader(name: user.fullName ?? 'Người dùng'),
-                  HomeFunctionGrid(functions: functions, recordCounts: recordCounts),
-                  const HomeFooter(),
+                  HomeFunctionGrid(functions: functions, recordCounts: recordCounts,token: widget.token),
+                  HomeFooter(token: widget.token),
                 ],
               ),
             );
           },
-          loading: () => const CircularProgressIndicator(),
-          error: (e, stackTrace) => Text('❌ Lỗi khi lấy funcsTagActive: $e'),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Text('❌ Lỗi khi lấy funcsTagActive: $e'),
         );
       },
-      loading: () => const CircularProgressIndicator(),
-      error: (e, stackTrace) => Text('❌ Lỗi khi lấy authenticateToken: $e'),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Text('❌ Lỗi khi lấy authenticateToken: $e'),
     );
   }
 }

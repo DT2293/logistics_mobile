@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:logistic/models/ktlogistics_token.dart';
 import 'package:logistic/pages/home/widget/home_footer.dart';
 
 abstract class BaseListPage<T> extends StatefulWidget {
   final String title;
-
-  const BaseListPage({super.key, required this.title});
+ final KtLogisticsToken token; // Thêm token vào constructor
+  const BaseListPage({super.key, required this.title, required this.token});
 
   /// API fetch khác nhau giữa các trang
   Future<List<T>> fetchItems();
@@ -198,7 +199,8 @@ class _BaseListPageState<T> extends State<BaseListPage<T>> {
                   ),
                 ],
               ),
-      bottomNavigationBar: const HomeFooter(),
+      bottomNavigationBar: HomeFooter(token: widget.token),
+
     );
   }
 }

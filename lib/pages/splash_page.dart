@@ -1,59 +1,59 @@
-// import 'package:flutter/material.dart';
-// import 'package:logistic/models/ktlogistics_token.dart';
-// import 'package:logistic/pages/home/home_page.dart';
-// import 'package:logistic/pages/login_page.dart';
-// import 'package:logistic/services/authservice.dart';
+import 'package:flutter/material.dart';
+import 'package:logistic/pages/home/home_page.dart';
+import 'package:logistic/pages/login_page.dart';
 
-// class SplashPage extends StatefulWidget {
-//   final KtLogisticsToken token; // Đảm bảo đây là KtLogisticsToken
+import 'package:logistic/services/authservice.dart';
+import 'package:logistic/models/ktlogistics_token.dart';
 
-//   const SplashPage({super.key, required this.token});
+class SplashPage extends StatefulWidget {
+  const SplashPage({super.key});
 
-//   @override
-//   State<SplashPage> createState() => _SplashPageState();
-// }
+  @override
+  State<SplashPage> createState() => _SplashPageState();
+}
 
-// class _SplashPageState extends State<SplashPage> {
-//   @override
-//   void initState() {
-//     super.initState();
-//     _checkAutoLogin();
-//   }
+class _SplashPageState extends State<SplashPage> {
+  @override
+  void initState() {
+    super.initState();
+    _initApp();
+  }
 
-//   Future<void> _checkAutoLogin() async {
-//     await Future.delayed(const Duration(seconds: 2)); // hiệu ứng chờ
+  void _initApp() async {
+    await Future.delayed(const Duration(milliseconds: 1500)); // splash nhẹ
+    final success = await tryAutoLogin();
+print('🔍 Auto login success: $success');
 
-//     final isLoggedIn = await AuthService.tryAutoLogin();
+if (success) {
+  final tokenData = await AuthService.getStoredKtLogisticsToken();
+  print('🔍 Token data: $tokenData');
 
-//     if (!mounted) return;
+  if (tokenData != null) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => HomePage(token: tokenData)),
+      );
+    });
+    return;
+  } else {
+    print('⚠️ Token data null mặc dù token còn hạn');
+  }
+    }
 
-//     if (isLoggedIn) {
-//       Navigator.pushReplacement(
-//         context,
-//         MaterialPageRoute(
-//           builder: (_) => HomePage(token: widget.token), // Truyền KtLogisticsToken vào HomePage
-//         ),
-//       );
-//     } else {
-//       Navigator.pushReplacement(
-//         context,
-//         MaterialPageRoute(
-//           builder: (_) => const LoginPage(),
-//         ),
-//       );
-//     }
-//   }
+    // Nếu không có token hoặc thất bại thì vào login
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginPage()),
+      );
+    });
+  }
 
-//    @override
-//   Widget build(BuildContext context) {
-//     return const Scaffold(
-//       body: Center(
-//         child: CircularProgressIndicator(), // hiệu ứng chờ
-//       ),
-//     );
-//   }
-
-// }
-
-
- 
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
+    );
+  }
+}
