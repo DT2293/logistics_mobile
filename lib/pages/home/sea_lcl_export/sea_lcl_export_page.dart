@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:logistic/models/document_model.dart';
 import 'package:logistic/widgets/base_scaffold.dart';
 
-class SeaFCLExportPage extends BaseListPage<FwDocumentationViewModel> {
+class SeaLCLExportPage extends BaseListPage<FwDocumentationViewModel> {
   final FwDocumentationViewModel data;
 
-  const SeaFCLExportPage({
+  const SeaLCLExportPage({
     super.key,
     required this.data,
-  }) : super(title: 'Sea FCL Export');
+  }) : super(title: 'Sea LCL Export');
 
   @override
   Future<List<FwDocumentationViewModel>> fetchItems() async {
