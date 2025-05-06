@@ -147,7 +147,7 @@ class AuthService {
   // Làm mới token
   static Future<Map<String, dynamic>> refreshToken(String refreshToken) async {
     try {
-      final url = Uri.parse('$baseUrl/apiweb/KeToanLic/RefreshToken');
+      final url = Uri.parse('$baseUrl/apiweb/KeToanLic/RefreshLogin');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},

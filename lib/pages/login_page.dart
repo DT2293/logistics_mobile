@@ -196,7 +196,6 @@ void checkAutoLogin() async {
     );
   }
 }
-// Đặt ngoài class luôn
 Future<bool> tryAutoLogin() async {
   final token = await AuthService.getAuthenticateToken();
   final expired = await AuthService.getExpiredAuthenticateToken();

@@ -5,10 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LogisticsServices {
   static const String baseUrl = 'https://logistics.huetechcoop.com/api/forwar';
 
-  // Hàm kiểm tra quyền Forward trong JWT
- // Hàm kiểm tra quyền Forward trong JWT
-
-
 Future<bool> checkPermission(String authenticateToken, String funcsTagActive) async {
   try {
     // Lấy dữ liệu từ SharedPreferences (hoặc nơi lưu trữ khác) 
@@ -43,8 +39,6 @@ Future<bool> checkPermission(String authenticateToken, String funcsTagActive) as
     required String funcsTagActive,
   }) async {
     // Kiểm tra quyền "Forward" và funcsTagActive
-  
-
     // Tạo URL đầy đủ
     final url = Uri.parse('$baseUrl/$path');
 
@@ -63,6 +57,7 @@ Future<bool> checkPermission(String authenticateToken, String funcsTagActive) as
         return jsonDecode(response.body) as Map<String, dynamic>;
       } else if (response.statusCode == 401) {
         print('❌ Lỗi 401: Token không hợp lệ hoặc hết hạn');
+        
         return null;
       } else {
         print('❌ Lỗi ${response.statusCode}: ${response.body}');
@@ -72,7 +67,43 @@ Future<bool> checkPermission(String authenticateToken, String funcsTagActive) as
       print('❌ Lỗi khi gọi API $path: $e');
       return null;
     }
+    
   }
+  Future<Map<String, dynamic>?> postApiData({
+  required String path,
+  required Map<String, dynamic> body,
+  required String authenticateToken,
+  required String funcsTagActive,
+}) async {
+  final url = Uri.parse('$baseUrl/$path');
+
+  try {
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'AuthenticateToken': authenticateToken,
+        'FuncsTagActive': funcsTagActive,
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else if (response.statusCode == 401) {
+      print('❌ Lỗi 401: Token không hợp lệ hoặc hết hạn');
+      return null;
+    } else {
+      print('❌ Lỗi ${response.statusCode}: ${response.body}');
+      return null;
+    }
+  } catch (e) {
+    print('❌ Lỗi khi gọi POST API $path: $e');
+    return null;
+  }
+}
+
 
   // Hàm cụ thể gọi API từng module
   Future<Map<String, dynamic>?> seaFclExport({
@@ -142,5 +173,31 @@ Future<bool> checkPermission(String authenticateToken, String funcsTagActive) as
       funcsTagActive: funcsTagActive,
     );
   }
+
+  Future<Map<String, dynamic>?> advancePayment({
+    required String authenticateToken,
+    required String funcsTagActive,
+  }) {
+    return getApiData(
+      path: 'ListAdvancePaymentRequest',
+      authenticateToken: authenticateToken,
+      funcsTagActive: funcsTagActive,
+    );
+  }
+
+
+  
+  Future<Map<String, dynamic>?> addAdvancePayment({
+  required Map<String, dynamic> body,
+  required String authenticateToken,
+  required String funcsTagActive,
+}) {
+  return postApiData(
+    path: 'CreateAdvancePaymentRequest',
+    body: body,
+    authenticateToken: authenticateToken,
+    funcsTagActive: funcsTagActive,
+  );
+}
 
 }

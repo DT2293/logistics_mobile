@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:logistic/models/document_model.dart';
 import 'package:logistic/models/ktlogistics_token.dart';
-import 'package:logistic/pages/home/air_export/air_import_page.dart';
-import 'package:logistic/pages/home/air_import/air_export_page.dart';
+import 'package:logistic/models/payment_request_model.dart';
+import 'package:logistic/pages/home/air_import_/air_import_page.dart';
+import 'package:logistic/pages/home/air_export/air_export_page.dart';
 import 'package:logistic/pages/home/sea_fcl_export/sea_fcl_export_page.dart';
 import 'package:logistic/pages/home/sea_fcl_import/sea_fcl_import_page.dart';
 import 'package:logistic/pages/home/sea_lcl_Import/sea_lcl_Import.dart';
 import 'package:logistic/pages/home/sea_lcl_export/sea_lcl_export_page.dart';
+import 'package:logistic/pages/payment_request/payment_request_page.dart';
 import 'package:logistic/services/authservice.dart';
 import 'package:logistic/services/logistics_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +17,7 @@ class HomeFunctionGrid extends StatefulWidget {
   final List<FunctionModel> functions;
   final Map<String, int> recordCounts;
  final KtLogisticsToken token; // Thêm dòng này
+
 
   const HomeFunctionGrid({
     super.key,
@@ -62,13 +65,16 @@ class _HomeFunctionGridState extends State<HomeFunctionGrid> {
         case 'AirImport':
           _navigateToAirImport();
           break;
+        case 'AdvancePaymentRequest':
+          _navigateToAdvancePayment();
+          break;
         default:
           print('❌ Chức năng không xác định');
       }
     }
   }
 
- Future<void> navigateToDocumentationPage({
+  Future<void> navigateToDocumentationPage({
   required BuildContext context,
   required Future<dynamic> Function({required String authenticateToken, required String funcsTagActive}) fetchFunction,
   required Widget Function(FwDocumentationViewModel data) pageBuilder,
@@ -103,6 +109,49 @@ class _HomeFunctionGridState extends State<HomeFunctionGrid> {
     print('❌ Lỗi khi gọi API: $e');
   }
 }
+
+Future<void> _navigateToAdvancePayment() async {
+  final prefs = await SharedPreferences.getInstance();
+  final authenticateToken = prefs.getString('authenticateToken');
+  final funcsTagActive = prefs.getString('funcsTagActive') ?? '';
+
+  try {
+    final response = await service.advancePayment(
+      authenticateToken: authenticateToken ?? '',
+      funcsTagActive: funcsTagActive,
+    );
+
+    if (response != null && response['items'] is List) {
+      final items = response['items'] as List;
+      final requests = items
+          .map((e) => AdvancePaymentRequestViewModel.fromJson(e))
+          .toList();
+
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => AdvancePaymentPage(
+            data: requests,
+            token: widget.token,
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Không có dữ liệu tạm ứng')),
+      );
+    }
+  } catch (e) {
+    print('Lỗi: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Đã xảy ra lỗi khi lấy dữ liệu')),
+    );
+  }
+}
+
+
+
 Future<void> _navigateToSeaFCLExport() async {
   await navigateToDocumentationPage(
     context: context,
@@ -150,6 +199,7 @@ Future<void> _navigateToAirImport() async {
     pageBuilder: (data) => AirImportPage(data: data,token: widget.token),
   );
 }
+
 
 
   @override

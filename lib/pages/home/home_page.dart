@@ -1,6 +1,5 @@
 // home_page.dart
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logistic/models/document_model.dart';
@@ -12,6 +11,7 @@ import 'package:logistic/provider/logistics_service_provider.dart';
 import 'package:logistic/services/authservice.dart';
 import 'package:logistic/services/logistics_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:collection/collection.dart';
 
 // Provider cho LogisticsServices
 class RecordCountsNotifier extends StateNotifier<Map<String, int>> {
@@ -64,6 +64,9 @@ class RecordCountsNotifier extends StateNotifier<Map<String, int>> {
         case 'AirImport':
           rawData = await service.airImport(authenticateToken: token, funcsTagActive: tag);
           break;
+         case 'AdvancePaymentRequest':
+          rawData = await service.advancePayment(authenticateToken: token, funcsTagActive: tag);
+          break;
       }
       if (rawData != null) {
         return FwDocumentationViewModel.fromJson(rawData);
@@ -88,8 +91,9 @@ class RecordCountsNotifier extends StateNotifier<Map<String, int>> {
         inverseParent: [],
       ),
     );
-    return forwardFunction.inverseParent.take(6).toList();
+    return forwardFunction.inverseParent.take(100).toList();
   }
+
 }
 final authenticateTokenProvider = FutureProvider<String?>((ref) async {
   final prefs = await SharedPreferences.getInstance();
@@ -127,47 +131,56 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    // Watching the authenticateTokenProvider and funcsTagActiveProvider
-    final authenticateTokenAsync = ref.watch(authenticateTokenProvider);
-    final funcsTagActiveAsync = ref.watch(funcsTagActiveProvider);
+Widget build(BuildContext context) {
+  final authenticateTokenAsync = ref.watch(authenticateTokenProvider);
+  final funcsTagActiveAsync = ref.watch(funcsTagActiveProvider);
 
-    return authenticateTokenAsync.when(
-      data: (authenticateToken) {
-        return funcsTagActiveAsync.when(
-          data: (funcsTagActive) {
-            // Handle null data if needed, otherwise continue
-            if (authenticateToken == null || funcsTagActive == null) {
-              return const Center(child: Text("Lỗi: Token không hợp lệ"));
-            }
+  return authenticateTokenAsync.when(
+    data: (authenticateToken) {
+      return funcsTagActiveAsync.when(
+        data: (funcsTagActive) {
+          if (authenticateToken == null || funcsTagActive == null) {
+            return const Center(child: Text("Lỗi: Token không hợp lệ"));
+          }
 
-            // Using the `widget.token` to access the `KtLogisticsToken` and extract needed info
-            final recordCounts = ref.watch(recordCountsProvider(widget.token));
-            final functions = widget.token.userLogisticsInfosModels.lstFunctions
-                .firstWhere((f) => f.functionName == 'Forward')
-                .inverseParent
-                .take(6)
-                .toList();
-            final user = widget.token.userLogisticsInfosModels.oneUserLogisticsInfo;
+          final recordCounts = ref.watch(recordCountsProvider(widget.token));
+          final allFunctions = widget.token.userLogisticsInfosModels.lstFunctions
+              .firstWhere((f) => f.functionName == 'Forward')
+              .inverseParent;
 
-            // Return the home page UI
-            return Scaffold(
-              backgroundColor: Colors.grey[100],
-              body: Column(
-                children: [
-                  HomeHeader(name: user.fullName ?? 'Người dùng'),
-                  HomeFunctionGrid(functions: functions, recordCounts: recordCounts,token: widget.token),
-                  HomeFooter(token: widget.token),
-                ],
-              ),
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Text('❌ Lỗi khi lấy funcsTagActive: $e'),
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Text('❌ Lỗi khi lấy authenticateToken: $e'),
-    );
-  }
+          final firstSix = allFunctions.take(6).toList();
+          final advancePayment = allFunctions.firstWhereOrNull(
+            (f) => f.actionName == 'AdvancePaymentRequest',
+          );
+
+          // Tránh trùng actionName
+          final functions = {
+            for (var f in [...firstSix, if (advancePayment != null) advancePayment]) f.actionName: f
+          }.values.toList();
+
+          final user = widget.token.userLogisticsInfosModels.oneUserLogisticsInfo;
+
+          return Scaffold(
+            backgroundColor: Colors.grey[100],
+            body: Column(
+              children: [
+                HomeHeader(name: user.fullName ?? 'Người dùng'),
+                HomeFunctionGrid(
+                  functions: functions,
+                  recordCounts: recordCounts,
+                  token: widget.token,
+                ),
+                HomeFooter(token: widget.token),
+              ],
+            ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Text('❌ Lỗi khi lấy funcsTagActive: $e'),
+      );
+    },
+    loading: () => const Center(child: CircularProgressIndicator()),
+    error: (e, _) => Text('❌ Lỗi khi lấy authenticateToken: $e'),
+  );
+}
 }

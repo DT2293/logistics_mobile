@@ -1,20 +1,25 @@
+
 import 'package:flutter/material.dart';
 import 'package:logistic/models/document_model.dart';
 import 'package:logistic/models/ktlogistics_token.dart';
-import 'package:logistic/pages/home/sea_fcl_export/addsea_fcl_export_page.dart';
+import 'package:logistic/pages/home/air_export/add_air_export_page.dart';
 import 'package:logistic/widgets/base_scaffold.dart';
 
-class SeaFCLExportPage extends BaseListPage<FwDocumentationViewModel> {
+class AirExportPage extends BaseListPage<FwDocumentationViewModel> {
   final FwDocumentationViewModel data;
-  final KtLogisticsToken token;
-  const SeaFCLExportPage({super.key, required this.data, required this.token})
-    : super(title: 'Sea FCL Export', token: token);
+final KtLogisticsToken token;
+  const AirExportPage({
+    super.key,
+    required this.data,
+    required this.token
+  }) : super(title: 'Air Export', token: token);
 
   @override
   Future<List<FwDocumentationViewModel>> fetchItems() async {
     return data.items.map((e) => FwDocumentationViewModel.fromJson(e)).toList();
   }
-  @override
+
+    @override
 void onAddPressed(BuildContext context) {
     // Cần truyền BuildContext vào phương thức này
     print('Add button pressed');
@@ -22,17 +27,17 @@ void onAddPressed(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddSeaFCLExportPage(token: token,), // Thay AddSeaLCLImportPage bằng trang của bạn
+        builder: (context) => AddAirExportPage(token: token,), // Thay AddSeaLCLImportPage bằng trang của bạn
       ),
     );
   }
-  @override
+
+ @override
   void onDeleteItem(FwDocumentationViewModel item) {
     // Tuỳ xử lý xoá ở đây (gọi API xóa, hoặc log, hoặc hiển thị toast...)
     print(' Đã xóa: ${item.billNo}');
   }
-
-  @override
+   @override
   List<DataColumn> get columns => const [
     DataColumn(label: Text('Job No')),
     DataColumn(label: Text('ETD')),
@@ -76,31 +81,16 @@ List<DataCell> buildCells(FwDocumentationViewModel item) => [
 ];
 
 
+
   @override
   Widget buildDetailPopup(FwDocumentationViewModel job) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Text('Job No: ${job.jobNo ?? 'N/A'}'),
-      Text('ETD: ${job.etd ?? 'N/A'}'),
-      Text('Customer: ${job.customerConsigneeInfo ?? 'N/A'}'),
-      Text('POL: ${job.polName ?? 'N/A'}'),
-      Text('POD: ${job.podName ?? 'N/A'}'),
-      Text('Carrier Name: ${job.carrierName ?? 'N/A'}'),
-      Text('CusShipInf: ${job.customerShipperInfo ?? 'N/A'}'),
-      Text('SalesName: ${job.salesname ?? 'N/A'}'),
-      Text('Container: ${job.containers ?? 'N/A'}'),
-      Text('Qty: ${job.qty ?? 'N/A'}'),
-      Text('G.W: ${job.gw ?? 'N/A'}'),
-      Text('N.W: ${job.nw ?? 'N/A'}'),
-      Text('CBM: ${job.cbm ?? 'N/A'}'),
-    ],
-  );
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('Job No: ${job.jobNo ?? 'N/A'}'),
+          Text('ETD: ${job.etd ?? 'N/A'}'),
+          Text('Customer: ${job.customerConsigneeInfo ?? 'N/A'}'),
+          Text('POL: ${job.polName ?? 'N/A'}'),
+        ],
+      );
 }
-
-//carriername
-//cusshipinf
-//selname
-//agentname
-//polname
-//podname

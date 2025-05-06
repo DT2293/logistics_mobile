@@ -1,5 +1,5 @@
 class FwDocumentationViewModel {
-   final List<dynamic> items;
+  final List<dynamic> items;
   int? jobId;
   String? jobNo;
   int? typesImpExpId;
@@ -66,9 +66,12 @@ class FwDocumentationViewModel {
   String? moveType;
   String? userId;
   String? routingAir;
+  String? salesname;
   int? unitId;
   String? coLoader;
   String? scn;
+  String? CDS_No;
+  String? NameUserCreate;
   List<FwDocumentationUser>? fwDocumentationUsers;
   List<FwHouseBillViewModel>? fwHouseBills;
   List<FwLGBuyingViewModel>? fwLGBuyings;
@@ -76,7 +79,7 @@ class FwDocumentationViewModel {
   List<FwOtherCreditViewModel>? fwOtherCredit;
   List<FwLGSellingViewModel>? fwLGSellings;
   String? salesmanId;
-  String? csUsersId;
+  String? csUsersId;  
 
   FwDocumentationViewModel({
     this.jobId,
@@ -94,6 +97,7 @@ class FwDocumentationViewModel {
     this.tsName,
     this.polId,
     this.polName,
+    this.salesname,
     this.podId,
     this.podName,
     this.podischargeId,
@@ -156,6 +160,8 @@ class FwDocumentationViewModel {
     this.fwLGSellings,
     this.salesmanId,
     this.csUsersId,
+    this.CDS_No,
+    this.NameUserCreate,
     required this.items
   });
 
@@ -175,6 +181,7 @@ class FwDocumentationViewModel {
       podtsId: json['podtsId'],
       tsName: json['tsName'],
       polId: json['polId'],
+      salesname: json['salename'],
       polName: json['polName'],
       podId: json['podId'],
       podName: json['podName'],
@@ -239,6 +246,8 @@ class FwDocumentationViewModel {
       fwLGSellings: (json['fwLGSellings'] as List?)?.map((e) => FwLGSellingViewModel.fromJson(e)).toList(),
       salesmanId: json['salesmanId'],
       csUsersId: json['csUsersId'],
+      NameUserCreate: json['nameUserCreate'],
+      CDS_No: json['cdS_No']
     );
   }
 }
