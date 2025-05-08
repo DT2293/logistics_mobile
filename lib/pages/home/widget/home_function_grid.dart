@@ -23,7 +23,7 @@ class HomeFunctionGrid extends StatefulWidget {
     super.key,
     required this.functions,
     required this.recordCounts,
-    required this.token
+    required this.token,
   });
 
   @override
@@ -149,7 +149,6 @@ Future<void> _navigateToAdvancePayment() async {
     );
   }
 }
-
 
 
 Future<void> _navigateToSeaFCLExport() async {

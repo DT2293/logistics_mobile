@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:logistic/models/document_model.dart';
 import 'package:logistic/models/ktlogistics_token.dart';
 import 'package:logistic/models/payment_request_model.dart';
-import 'package:logistic/pages/payment_request/addpayment_request_page.dart';
+import 'package:logistic/pages/payment_request/add_advance_payment_page.dart';
+
 import 'package:logistic/widgets/base_scaffold.dart';
 
 
@@ -27,7 +29,7 @@ void onAddPressed(BuildContext context) {
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => AddAdvancePaymentRequestPage(token: token),
+      builder: (context) => AddAdvancePaymentPage(token: token),
     ),
   );
 }

@@ -167,6 +167,7 @@ Widget build(BuildContext context) {
                 HomeHeader(name: user.fullName ?? 'Người dùng'),
                 HomeFunctionGrid(
                   functions: functions,
+               
                   recordCounts: recordCounts,
                   token: widget.token,
                 ),

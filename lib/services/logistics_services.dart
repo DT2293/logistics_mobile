@@ -106,6 +106,18 @@ Future<bool> checkPermission(String authenticateToken, String funcsTagActive) as
 
 
   // Hàm cụ thể gọi API từng module
+
+Future<Map<String, dynamic>?> listDocument({
+    required String authenticateToken,
+    required String funcsTagActive,
+  }) {
+    return getApiData(
+      path: 'ListDocumentation',
+      authenticateToken: authenticateToken,
+      funcsTagActive: funcsTagActive,
+    );
+  }
+
   Future<Map<String, dynamic>?> seaFclExport({
     required String authenticateToken,
     required String funcsTagActive,
