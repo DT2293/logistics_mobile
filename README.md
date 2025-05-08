@@ -1,16 +1,15 @@
-# logistic
+# Logistics App: A Flutter mobile application developed during my internship, designed to interact with a company's internal logistics backend system.
 
-A new Flutter project.
+## Features
+- Secure login using license-based API (returns `authenticateToken` & `funcsTagActive`)
+- Auto-refresh JWT token for seamless session management
+- Manage sea/air shipments and export/import documentation
+- Dynamic permission control based on `funcsTagActive`
+- Multi-language support with `easy_localization`
+- Responsive and modular UI using `Riverpod` and `Provider`
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Technologies
+- Frontend: Flutter, Dio, Riverpod, Provider, SharedPreferences
+- Backend: OpenAPI-based (.NET), JWT authentication
+## Status
+**Ongoing** – actively developing and refining features.
