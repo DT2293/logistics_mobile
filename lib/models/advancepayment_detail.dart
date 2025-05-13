@@ -1,3 +1,4 @@
+
 // class AdvancePaymentDetail {
 //   int id;
 //   String description;
@@ -12,7 +13,9 @@
 //   bool isDM;
 //   bool isHD;
 //   bool isOther;
-
+//   int carrierID;
+//   String carrierName;
+//   String containers;
 //   AdvancePaymentDetail({
 //     this.id = 0,
 //     this.description = '',
@@ -27,70 +30,50 @@
 //     this.isDM = false,
 //     this.isHD = false,
 //     this.isOther = false,
+//     this.carrierID = 0,
+//     this.carrierName = '',
+//     this.containers = '',
 //   });
 
-//   Map<String, dynamic> toJson() => {
-//     'id': id,
-//     'description': description,
-//     'hblNo': hblNo,
-//     'amountNumber': amountNumber,
-//     'amountString': amountString,
-//     'curencyType': curencyType,
-//     'exchangeRate': exchangeRate,
-//     'intoMoney': intoMoney,
-//     'requestDate': requestDate,
-//     'contractNo': contractNo,
-//     'isDM': isDM,
-//     'isHD': isHD,
-//     'isOther': isOther,
-//   };
-// }
-
-// class AdvancePaymentRequest {
-//   int advancePaymentRequestId;
-//   String advancePaymentNo;
-//   int deparmentId;
-//   String jobId;
-//   String advancePaymentDate;
-//   int advancePaymentType;
-//   String curencyType;
-//   double advanceAmountNumber;
-//   String advanceAmountString;
-//   String description;
-//   String applicant;
-//   String applicantDate;
-//   List<AdvancePaymentDetail> lstDetail;
-
-//   AdvancePaymentRequest({
-//     this.advancePaymentRequestId = 0,
-//     required this.advancePaymentNo,
-//     required this.deparmentId,
-//     required this.jobId,
-//     required this.advancePaymentDate,
-//     this.advancePaymentType = 0,
-//     this.curencyType = "VND",
-//     required this.advanceAmountNumber,
-//     required this.advanceAmountString,
-//     required this.description,
-//     required this.applicant,
-//     required this.applicantDate,
-//     required this.lstDetail,
-//   });
+//   /// Dùng khi thêm dòng mới
+//   static AdvancePaymentDetail defaultDetail() {
+//     return AdvancePaymentDetail(
+//       id: 0,
+//       description: '',
+//       hblNo: '',
+//       amountNumber: 0,
+//       amountString: '',
+//       curencyType: 'VND',
+//       exchangeRate: 1,
+//       intoMoney: 0,
+//       requestDate: DateTime.now().toIso8601String(), // set mặc định là ngày hiện tại
+//       contractNo: '',
+//       isDM: false,
+//       isHD: false,
+//       isOther: false,
+//       carrierID: 0,
+//       carrierName: '',
+//       containers: '',
+//     );
+//   }
 
 //   Map<String, dynamic> toJson() => {
-//         "advancePaymentRequestId": advancePaymentRequestId,
-//         "advancePaymentNo": advancePaymentNo,
-//         "deparmentId": deparmentId,
-//         "jobId": jobId,
-//         "advancePaymentDate": advancePaymentDate,
-//         "advancePaymentType": advancePaymentType,
-//         "curencyType": curencyType,
-//         "advanceAmountNumber": advanceAmountNumber,
-//         "advanceAmountString": advanceAmountString,
-//         "description": description,
-//         "applicant": applicant,
-//         "applicantDate": applicantDate,
-//         "lstDetail": lstDetail.map((e) => e.toJson()).toList(),
+//         'id': id,
+//         'description': description,
+//         'hblNo': hblNo,
+//         'amountNumber': amountNumber,
+//         'amountString': amountString,
+//         'curencyType': curencyType,
+//         'exchangeRate': exchangeRate,
+//         'intoMoney': intoMoney,
+//         'requestDate': requestDate,
+//         'contractNo': contractNo,
+//         'isDM': isDM,
+//         'isHD': isHD,
+//         'isOther': isOther,
+//         'carrierID':carrierID,
+//         'carrierName':carrierName,
+//         'containers' : containers,
 //       };
 // }
 
@@ -109,6 +92,10 @@ class AdvancePaymentDetail {
   bool isDM;
   bool isHD;
   bool isOther;
+  int jobId;
+  int carrierId;
+ String carrierName; // Thêm carrierName vào model chính
+
 
   AdvancePaymentDetail({
     this.id = 0,
@@ -124,24 +111,15 @@ class AdvancePaymentDetail {
     this.isDM = false,
     this.isHD = false,
     this.isOther = false,
+    this.carrierId = 0,
+    this.jobId = 0,
+
+    this.carrierName = ''
   });
 
-  /// Dùng khi thêm dòng mới
   static AdvancePaymentDetail defaultDetail() {
     return AdvancePaymentDetail(
-      id: 0,
-      description: '',
-      hblNo: '',
-      amountNumber: 0,
-      amountString: '',
-      curencyType: 'VND',
-      exchangeRate: 1,
-      intoMoney: 0,
-      requestDate: DateTime.now().toIso8601String(), // set mặc định là ngày hiện tại
-      contractNo: '',
-      isDM: false,
-      isHD: false,
-      isOther: false,
+      requestDate: DateTime.now().toIso8601String(),
     );
   }
 
@@ -159,5 +137,8 @@ class AdvancePaymentDetail {
         'isDM': isDM,
         'isHD': isHD,
         'isOther': isOther,
+        'jobId': jobId,
+        'carrierName':carrierName,
+        'carrierId':carrierId
       };
 }

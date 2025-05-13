@@ -29,7 +29,7 @@ void onAddPressed(BuildContext context) {
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => AddAdvancePaymentPage(token: token),
+      builder: (context) => AddAdvancePaymentPage(token: token,data: data,),
     ),
   );
 }
@@ -47,6 +47,7 @@ void onAddPressed(BuildContext context) {
 
   @override
   List<DataCell> buildCells(AdvancePaymentRequestViewModel item) => [
+    
     DataCell(Text(item.advancePaymentNo ?? '')),
     DataCell(Text(item.advancePaymentDate ?? '')),
     DataCell(Text(item.advancePaymentType.toString())),
@@ -66,9 +67,9 @@ void onAddPressed(BuildContext context) {
     DataCell(Text(item.description ?? '')),
   ];
 
-  @override
+ @override
   Widget buildDetailPopup(AdvancePaymentRequestViewModel job) =>
-      SingleChildScrollView(
+      SingleChildScrollView(  // Bao bọc toàn bộ Column để có thể cuộn
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -77,7 +78,6 @@ void onAddPressed(BuildContext context) {
               'ĐỀ NGHỊ TẠM ỨNG',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-
             const SizedBox(height: 8),
             Row(
               children: [
@@ -96,7 +96,6 @@ void onAddPressed(BuildContext context) {
                 Expanded(child: Text('Trực thuộc phòng: ${job.deparmentId}')),
               ],
             ),
-
             const SizedBox(height: 8),
             Row(
               children: [
@@ -110,15 +109,13 @@ void onAddPressed(BuildContext context) {
             ),
             Text('Bằng chữ: ${job.advanceAmountString}'),
             Text('Diễn giải: ${job.description}'),
-
             const SizedBox(height: 12),
             const Text(
               'Chi tiết:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-
             SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+              scrollDirection: Axis.horizontal, // Đảm bảo cuộn ngang cho DataTable
               child: DataTable(
                 columns: const [
                   DataColumn(label: Text('Descirption')),
@@ -133,27 +130,25 @@ void onAddPressed(BuildContext context) {
                   DataColumn(label: Text('HĐ')),
                   DataColumn(label: Text('Khác')),
                 ],
-                rows:
-                    job.lstDetail.map((item) {
-                      return DataRow(
-                        cells: [
-                          DataCell(Text(item.description)),
-                          DataCell(Text(item.hblNo)),
-                          DataCell(Text(item.amountNumber.toString())),
-                          DataCell(Text(item.curencyType)),
-                          DataCell(Text(item.exchangeRate.toString())),
-                          DataCell(Text(item.intoMoney.toString())),
-                          DataCell(Text(item.requestDate)),
-                          DataCell(Text(item.contractNo)),
-                          DataCell(Text(item.isDM ? '✔' : '')),
-                          DataCell(Text(item.isHD ? '✔' : '')),
-                          DataCell(Text(item.isOther ? '✔' : '')),
-                        ],
-                      );
-                    }).toList(),
+                rows: job.lstDetail.map((item) {
+                  return DataRow(
+                    cells: [
+                      DataCell(Text(item.description)),
+                      DataCell(Text(item.hblNo)),
+                      DataCell(Text(item.amountNumber.toString())),
+                      DataCell(Text(item.curencyType)),
+                      DataCell(Text(item.exchangeRate.toString())),
+                      DataCell(Text(item.intoMoney.toString())),
+                      DataCell(Text(item.requestDate)),
+                      DataCell(Text(item.contractNo)),
+                      DataCell(Text(item.isDM ? '✔' : '')),
+                      DataCell(Text(item.isHD ? '✔' : '')),
+                      DataCell(Text(item.isOther ? '✔' : '')),
+                    ],
+                  );
+                }).toList(),
               ),
             ),
-
             const SizedBox(height: 12),
             Text('Giám Đốc /Ký: ${job.directorDate}'),
             Text('Kế Toán Trưởng /Ký: ${job.chiefAccountantDate}'),

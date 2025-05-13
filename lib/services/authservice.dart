@@ -23,7 +23,16 @@ class AuthService {
     try {
       final loginModel = _prepareLoginModel(username, password, fromHost);
       final response = await _sendLoginRequest(loginModel);
-      return await _handleLoginResponse(response);
+      final result = await _handleLoginResponse(response);
+
+      if (result['success'] == true) {
+      final responseData = jsonDecode(response.body);
+      final userId = responseData['userId'];
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userId', userId.toString());
+      }
+
+      return result;
     } catch (e) {
       print('Error during login: $e');
       return {'success': false, 'message': 'Lỗi khi đăng nhập', 'error': e.toString()};

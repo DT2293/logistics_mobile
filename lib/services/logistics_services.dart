@@ -5,32 +5,35 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LogisticsServices {
   static const String baseUrl = 'https://logistics.huetechcoop.com/api/forwar';
 
-Future<bool> checkPermission(String authenticateToken, String funcsTagActive) async {
-  try {
-    // Lấy dữ liệu từ SharedPreferences (hoặc nơi lưu trữ khác) 
-    final prefs = await SharedPreferences.getInstance();
-    String? storedToken = prefs.getString('authenticateToken');
-    String? storedFuncsTagActive = prefs.getString('funcsTagActive');
+  Future<bool> checkPermission(
+    String authenticateToken,
+    String funcsTagActive,
+  ) async {
+    try {
+      // Lấy dữ liệu từ SharedPreferences (hoặc nơi lưu trữ khác)
+        final prefs = await SharedPreferences.getInstance();
+        String? storedToken = prefs.getString('authenticateToken');
+        String? storedFuncsTagActive = prefs.getString('funcsTagActive');
+      // Kiểm tra nếu không có dữ liệu
+      if (storedToken == null || storedFuncsTagActive == null) {
+        print('Không có thông tin token hoặc funcsTagActive');
+        return false;
+      }
 
-    // Kiểm tra nếu không có dữ liệu
-    if (storedToken == null || storedFuncsTagActive == null) {
-      print('Không có thông tin token hoặc funcsTagActive');
+      // So sánh authenticateToken và funcsTagActive với dữ liệu đã lưu
+      if (authenticateToken == storedToken &&
+          funcsTagActive == storedFuncsTagActive) {
+        print('✅ Có quyền Forward với funcsTagActive hợp lệ');
+        return true;
+      }
+
+      print('Không có quyền Forward hoặc funcsTagActive không hợp lệ');
+      return false;
+    } catch (e) {
+      print('Lỗi khi kiểm tra quyền: $e');
       return false;
     }
-
-    // So sánh authenticateToken và funcsTagActive với dữ liệu đã lưu
-    if (authenticateToken == storedToken && funcsTagActive == storedFuncsTagActive) {
-      print('✅ Có quyền Forward với funcsTagActive hợp lệ');
-      return true;
-    }
-
-    print('Không có quyền Forward hoặc funcsTagActive không hợp lệ');
-    return false;
-  } catch (e) {
-    print('Lỗi khi kiểm tra quyền: $e');
-    return false;
   }
-}
 
   // Hàm gọi GET API chung
   Future<Map<String, dynamic>?> getApiData({
@@ -48,16 +51,17 @@ Future<bool> checkPermission(String authenticateToken, String funcsTagActive) as
         headers: {
           'Accept': 'application/json',
           'AuthenticateToken': authenticateToken,
-          'FuncsTagActive': funcsTagActive,  // Sử dụng funcsTagActive từ SharedPreferences
+          'FuncsTagActive':
+              funcsTagActive, // Sử dụng funcsTagActive từ SharedPreferences
         },
       );
 
       if (response.statusCode == 200) {
-      //  print('✅ Dữ liệu từ $path: ${response.body}');
+        //  print('✅ Dữ liệu từ $path: ${response.body}');
         return jsonDecode(response.body) as Map<String, dynamic>;
       } else if (response.statusCode == 401) {
         print('❌ Lỗi 401: Token không hợp lệ hoặc hết hạn');
-        
+
         return null;
       } else {
         print('❌ Lỗi ${response.statusCode}: ${response.body}');
@@ -67,47 +71,45 @@ Future<bool> checkPermission(String authenticateToken, String funcsTagActive) as
       print('❌ Lỗi khi gọi API $path: $e');
       return null;
     }
-    
   }
+
   Future<Map<String, dynamic>?> postApiData({
-  required String path,
-  required Map<String, dynamic> body,
-  required String authenticateToken,
-  required String funcsTagActive,
-}) async {
-  final url = Uri.parse('$baseUrl/$path');
+    required String path,
+    required Map<String, dynamic> body,
+    required String authenticateToken,
+    required String funcsTagActive,
+  }) async {
+    final url = Uri.parse('$baseUrl/$path');
 
-  try {
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'AuthenticateToken': authenticateToken,
-        'FuncsTagActive': funcsTagActive,
-      },
-      body: jsonEncode(body),
-    );
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'AuthenticateToken': authenticateToken,
+          'FuncsTagActive': funcsTagActive,
+        },
+        body: jsonEncode(body),
+      );
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return jsonDecode(response.body) as Map<String, dynamic>;
-    } else if (response.statusCode == 401) {
-      print('❌ Lỗi 401: Token không hợp lệ hoặc hết hạn');
-      return null;
-    } else {
-      print('❌ Lỗi ${response.statusCode}: ${response.body}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else if (response.statusCode == 401) {
+        print('❌ Lỗi 401: Token không hợp lệ hoặc hết hạn');
+        return null;
+      } else {
+        print('❌ Lỗi ${response.statusCode}: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('❌ Lỗi khi gọi POST API $path: $e');
       return null;
     }
-  } catch (e) {
-    print('❌ Lỗi khi gọi POST API $path: $e');
-    return null;
   }
-}
-
 
   // Hàm cụ thể gọi API từng module
-
-Future<Map<String, dynamic>?> listDocument({
+  Future<Map<String, dynamic>?> listDocument({
     required String authenticateToken,
     required String funcsTagActive,
   }) {
@@ -129,8 +131,7 @@ Future<Map<String, dynamic>?> listDocument({
     );
   }
 
-
-   Future<Map<String, dynamic>?> sealclExport({
+  Future<Map<String, dynamic>?> sealclExport({
     required String authenticateToken,
     required String funcsTagActive,
   }) {
@@ -141,8 +142,7 @@ Future<Map<String, dynamic>?> listDocument({
     );
   }
 
-
-   Future<Map<String, dynamic>?> sealclImport({
+  Future<Map<String, dynamic>?> sealclImport({
     required String authenticateToken,
     required String funcsTagActive,
   }) {
@@ -153,7 +153,7 @@ Future<Map<String, dynamic>?> listDocument({
     );
   }
 
-   Future<Map<String, dynamic>?> seafclImport({
+  Future<Map<String, dynamic>?> seafclImport({
     required String authenticateToken,
     required String funcsTagActive,
   }) {
@@ -164,7 +164,7 @@ Future<Map<String, dynamic>?> listDocument({
     );
   }
 
-    Future<Map<String, dynamic>?> airExport({
+  Future<Map<String, dynamic>?> airExport({
     required String authenticateToken,
     required String funcsTagActive,
   }) {
@@ -197,19 +197,55 @@ Future<Map<String, dynamic>?> listDocument({
     );
   }
 
-
-  
   Future<Map<String, dynamic>?> addAdvancePayment({
-  required Map<String, dynamic> body,
-  required String authenticateToken,
-  required String funcsTagActive,
-}) {
-  return postApiData(
-    path: 'CreateAdvancePaymentRequest',
-    body: body,
-    authenticateToken: authenticateToken,
-    funcsTagActive: funcsTagActive,
-  );
-}
+    required Map<String, dynamic> body,
+    required String authenticateToken,
+    required String funcsTagActive,
+  }) {
+    return postApiData(
+      path: 'CreateAdvancePaymentRequest',
+      body: body,
+      authenticateToken: authenticateToken,
+      funcsTagActive: funcsTagActive,
+    );
+  }
 
+  Future<Map<String, dynamic>?> getJobDetailByType({
+    required String authenticateToken,
+    required String funcsTagActive,
+    required int typesImpExpId,
+    required int jobId,
+  }) {
+    late final String path;
+
+    switch (typesImpExpId) {
+      case 13:
+        path = 'GetByIdSeaFCLExport';
+        break;
+      case 12:
+        path = 'GetByIdSeaFCLImport';
+        break;
+      case 11:
+        path = 'GetByIdSeaLCLExport';
+        break;
+
+      case 10:
+        path = 'GetByIdSeaLCLImport';
+        break;
+      case 9:
+        path = 'GetByIdAirExport';
+        break;
+      case 8:
+        path = 'GetByIdAirImport';
+        break;
+      default:
+        return Future.value(null);
+    }
+
+    return getApiData(
+      path: '$path?id=$jobId',
+      authenticateToken: authenticateToken,
+      funcsTagActive: funcsTagActive,
+    );
+  }
 }
