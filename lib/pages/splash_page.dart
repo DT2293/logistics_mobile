@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logistic/pages/home/home_page.dart';
 import 'package:logistic/pages/login_page.dart';
+import 'package:logistic/provider/notification_provider.dart';
 import 'package:logistic/services/authservice.dart';
 import 'package:logistic/models/ktlogistics_token.dart';
 
-class SplashPage extends StatefulWidget {
+class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
+  ConsumerState<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
+class _SplashPageState extends ConsumerState<SplashPage> {
   @override
   void initState() {
     super.initState();
@@ -19,28 +21,32 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _initApp() async {
-    await Future.delayed(const Duration(milliseconds: 1500)); // splash nhẹ
-    final success = await tryAutoLogin();
-    print('🔍 Auto login success: $success');
+    await Future.delayed(const Duration(milliseconds: 1500));
 
-    if (success) {
-      final tokenData = await AuthService.getStoredKtLogisticsToken();
-      print('🔍 Token data: $tokenData');
+    final tokenData = await tryAutoLogin(); // trả về KtLogisticsToken? thay vì bool
+    print('🔍 Auto login token: $tokenData');
 
-      if (tokenData != null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => HomePage(token: tokenData)),
-          );
-        });
-        return;
-      } else {
-        print('⚠️ Token data null mặc dù token còn hạn');
+    if (tokenData != null) {
+      final userId = tokenData.userLogisticsInfosModels.oneUserLogisticsInfo.userId.toString();
+    //  final signalR = ref.read(signalRServiceProvider); // lấy từ Riverpod
+
+      try {
+     //   await signalR.startConnection(userId);
+        print('🔌 SignalR kết nối với userId: $userId');
+      } catch (e) {
+        print('❌ Không kết nối được SignalR: $e');
       }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomePage(token: tokenData)),
+        );
+      });
+      return;
     }
 
-    // Nếu không có token hoặc thất bại thì vào login
+    // Nếu không login được thì chuyển về login
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Navigator.pushReplacement(
         context,

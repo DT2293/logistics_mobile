@@ -4,9 +4,9 @@ import 'package:logistic/models/ktlogistics_token.dart';
 import 'package:logistic/pages/home/home_page.dart';
 import 'package:logistic/pages/login_page.dart';
 import 'package:logistic/pages/notifications/notifacation_page.dart';
-import 'package:logistic/provider/notification_provider.dart';
 
 import 'package:logistic/services/authservice.dart';
+import 'package:logistic/services/signalRservice.dart';
 
 class HomeFooter extends ConsumerWidget {
   final KtLogisticsToken token;

@@ -1,15 +1,26 @@
-// notification_provider.dart
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logistic/models/notification_model.dart';
 import 'package:logistic/services/notification_services.dart';
-
-
-
+import 'package:logistic/services/signalRservice.dart';
 
 class NotificationNotifier extends StateNotifier<List<NotificationModel>> {
+  final Ref ref;
   final String userId;
-  NotificationNotifier(this.userId) : super([]) {
+
+  NotificationNotifier(this.ref, this.userId) : super([]) {
     fetchNotifications();
+  }
+
+  void addNotification(NotificationModel newNotif) {
+    if (state.any((n) => n.id == newNotif.id)) {
+      print('Notification already exists: ${newNotif.id}');
+      // Nếu thông báo đã tồn tại thì không thêm
+      return;
+    }
+   // print('Before add: ${state.map((e) => e.id).toList()}');
+    state = [newNotif, ...state];
+   // print('After add: ${state.map((e) => e.id).toList()}');
   }
 
   Future<void> fetchNotifications() async {
@@ -20,17 +31,7 @@ class NotificationNotifier extends StateNotifier<List<NotificationModel>> {
   void markAsRead(String id) {
     state = [
       for (final n in state)
-        if (n.id == id)
-          n.copyWith(status: true) // bạn cần thêm hàm `copyWith` trong model
-        else
-          n
+        if (n.id == id) n.copyWith(status: true) else n,
     ];
   }
-
-  int get unreadCount => state.where((n) => !n.status).length;
 }
-
-final notificationProvider = StateNotifierProvider.family<
-    NotificationNotifier, List<NotificationModel>, String>((ref, userId) {
-  return NotificationNotifier(userId);
-});

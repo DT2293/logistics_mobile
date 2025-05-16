@@ -1,66 +1,83 @@
 import 'dart:async';
 
-import 'package:signalr_core/signalr_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logistic/models/notification_model.dart';
+import 'package:logistic/provider/notification_provider.dart';
 
 import 'package:signalr_core/signalr_core.dart';
+
+
 
 class SignalRService {
+  final Ref ref;
+  final String userId;
   late HubConnection _connection;
 
-  // Stream controller để gửi thông báo đến UI
-  final StreamController<String> _notificationStreamController = StreamController<String>.broadcast();
-  Stream<String> get notificationStream => _notificationStreamController.stream;
+  SignalRService(this.ref, this.userId);
 
-  Future<void> startConnection(String userId) async {
+  Future<void> startConnection() async {
     _connection = HubConnectionBuilder()
-        .withUrl(
-          'https://logistics.huetechcoop.com/notificationUserHub',
-          HttpConnectionOptions(
-            transport: HttpTransportType.webSockets,
-            skipNegotiation: true,
-          ),
-        )
-        .withAutomaticReconnect()
-        .build();
+      .withUrl(
+        'https://logistics.huetechcoop.com/notificationUserHub',
+        HttpConnectionOptions(
+          transport: HttpTransportType.webSockets,
+          skipNegotiation: true,
+        ),
+      )
+      .withAutomaticReconnect()
+      .build();
 
-    _connection.on("ReceiveNotification", _receiveNotification);
+    // _connection.on("ReceiveNotification", (notification) {
+    //   if (notification != null && notification.isNotEmpty) {
+    //     final firstData = notification.first;
+    //     final mapData = Map<String, dynamic>.from(firstData as Map);
+    //     final newNotif = NotificationModel.fromJson(mapData);
+
+    //     // Cập nhật provider
+    //     ref.read(notificationProvider(userId).notifier).addNotification(newNotif);
+    //   }
+    // });
+
+    _connection.on("ReceiveNotification", (notification) {
+  if (notification != null && notification.isNotEmpty) {
+    final firstData = notification.first;
+    final mapData = Map<String, dynamic>.from(firstData as Map);
+    final newNotif = NotificationModel.fromJson(mapData);
+
+    Future.microtask(() {
+      ref.read(notificationProvider(userId).notifier).addNotification(newNotif);
+    });
+  }
+});
+
 
     try {
       await _connection.start();
-      print("✅ SignalR Connected với userId: $userId");
       await _connection.invoke('ConnectWithUserId', args: [userId]);
+      print('✅ SignalR Connected userId: $userId');
     } catch (e) {
-      print("❌ SignalR Connection Error: $e");
-      rethrow;
+      print('❌ SignalR Connection Error: $e');
     }
   }
 
-  // Xử lý nhận thông báo
-  void _receiveNotification(List<Object?>? notification) {
-    print("📨 Nhận thông báo mới: $notification");
-    try {
-      if (notification != null) {
-        // Bạn có thể tùy chỉnh dữ liệu thông báo nếu cần
-        String heading = notification[0] as String;
-        String content = notification[1] as String;
-
-        // Gửi thông báo đến UI qua stream
-        _notificationStreamController.sink.add('New Notification: $heading - $content');
-      }
-    } catch (error) {
-      print("Lỗi khi xử lý thông báo: $error");
-    }
-  }
-
-  // Dừng kết nối SignalR
   Future<void> stopConnection() async {
     await _connection.stop();
-  }
-
-  bool get isConnected => _connection.state == HubConnectionState.connected;
-
-  // Hủy stream khi không cần sử dụng nữa
-  void dispose() {
-    _notificationStreamController.close();
+    print('🛑 SignalR disconnected');
   }
 }
+final signalRServiceProvider = Provider.family<SignalRService, String>((ref, userId) {
+  final signalR = SignalRService(ref, userId);
+  signalR.startConnection();
+  ref.onDispose(() {
+    signalR.stopConnection();
+  });
+  return signalR;
+});
+
+final notificationProvider = StateNotifierProvider.family<NotificationNotifier, List<NotificationModel>, String>(
+  (ref, userId) {
+    // Lấy SignalRService để đảm bảo kết nối
+    ref.read(signalRServiceProvider(userId));
+    return NotificationNotifier(ref, userId);
+  },
+);

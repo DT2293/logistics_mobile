@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logistic/models/ktlogistics_token.dart';
 import 'package:logistic/pages/notifications/notifacation_page.dart';
 import 'package:logistic/provider/notification_provider.dart';
+import 'package:logistic/services/signalRservice.dart';
 
 Widget buildNotificationIcon(BuildContext context, WidgetRef ref, String userId, KtLogisticsToken token) {
   final notifications = ref.watch(notificationProvider(userId));
